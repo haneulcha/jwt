@@ -1,10 +1,15 @@
 import { Router } from "express";
+import { validate } from "../middleware";
+import { userSchema } from "../schemas/user";
+import { userController } from "../controllers/auth";
 
 const authRouter = Router();
 
-authRouter.post("/sign-up", (req, res) => {
-  res.send("sign-up");
-});
+authRouter.post(
+  "/sign-up",
+  validate(userSchema.register),
+  userController.registerUser
+);
 
 authRouter.post("/login", (req, res) => {
   res.send("login");
