@@ -1,5 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { type User } from "../mongo/model";
+import { findRefreshToken, removeRefreshTokens } from "../services/user";
+import { Types } from "mongoose";
 
 const SALT = 10;
 
@@ -24,7 +27,7 @@ const comparePassword = async (password: string, hashedPassword: string) => {
   }
 };
 
-const generateToken = async (user: any) => {
+const generateToken = async (user: User) => {
   const accessToken = jwt.sign(user, process.env.JWT_SECRET!, {
     expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
   });
@@ -34,4 +37,38 @@ const generateToken = async (user: any) => {
   return { accessToken, refreshToken };
 };
 
-export { hashedPassword, comparePassword, generateToken };
+const decodeToken = async (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    return decoded as User;
+  } catch (error) {
+    console.log("utils/decodeToken", error);
+    throw error;
+  }
+};
+
+const isRefreshTokenValid = async (
+  id: Types.ObjectId,
+  refreshToken: string
+) => {
+  try {
+    const user = await findRefreshToken(id, refreshToken);
+    if (!user) {
+      // not in db
+      await removeRefreshTokens(id);
+      return null;
+    }
+    return user;
+  } catch (error) {
+    console.log("utils/isRefreshTokenValid", error);
+    return null;
+  }
+};
+
+export {
+  hashedPassword,
+  comparePassword,
+  generateToken,
+  decodeToken,
+  isRefreshTokenValid,
+};

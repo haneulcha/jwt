@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validate } from "../middleware";
 import { userSchema } from "../schemas/user";
 import { userController } from "../controllers/auth";
+import { tokenSchema } from "../schemas/token";
 
 const authRouter = Router();
 
@@ -13,7 +14,7 @@ authRouter.post(
 
 authRouter.post("/login", validate(userSchema.login), userController.logInUser);
 
-authRouter.get("/refresh", (req, res) => {
+authRouter.get("/refresh", validate(tokenSchema.tokenSet), (req, res) => {
   res.send("refresh");
 });
 

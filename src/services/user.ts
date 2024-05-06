@@ -28,4 +28,45 @@ const assignRefreshToken = async (id: Types.ObjectId, refreshToken: string) => {
   return user;
 };
 
-export { getUserByEmail, saveUser, assignRefreshToken };
+const findRefreshToken = async (id: Types.ObjectId, refreshToken: string) => {
+  const user = await userModel.findOne({
+    _id: id,
+    refreshTokens: {
+      $in: [refreshToken],
+    },
+  });
+  return user;
+};
+
+const removeRefreshTokens = async (id: Types.ObjectId) => {
+  const user = await userModel.updateOne(
+    { _id: id },
+    { $set: { refreshTokens: [] } }
+  );
+  return user;
+};
+
+const replaceRefreshToken = async (
+  id: Types.ObjectId,
+  oldRefreshToken: string,
+  newRefreshToken: string
+) => {
+  const user = await userModel.updateOne(
+    { _id: id, refreshTokens: oldRefreshToken },
+    {
+      $set: {
+        "refreshTokens.$": newRefreshToken,
+      },
+    }
+  );
+  return user;
+};
+
+export {
+  getUserByEmail,
+  saveUser,
+  assignRefreshToken,
+  findRefreshToken,
+  removeRefreshTokens,
+  replaceRefreshToken,
+};
