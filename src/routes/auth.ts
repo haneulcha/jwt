@@ -11,9 +11,7 @@ authRouter.post(
   userController.registerUser
 );
 
-authRouter.post("/login", (req, res) => {
-  res.send("login");
-});
+authRouter.post("/login", validate(userSchema.login), userController.logInUser);
 
 authRouter.get("/refresh", (req, res) => {
   res.send("refresh");

@@ -1,3 +1,4 @@
+import { type Types } from "mongoose";
 import { userModel } from "../mongo/model";
 
 const getUserByEmail = async (email: string) => {
@@ -18,4 +19,13 @@ const saveUser = async (userPayload: UserPayload) => {
   return user.save();
 };
 
-export { getUserByEmail, saveUser };
+const assignRefreshToken = async (id: Types.ObjectId, refreshToken: string) => {
+  const user = await userModel.updateOne(
+    { _id: id },
+    { $push: { refreshTokens: refreshToken } }
+  );
+
+  return user;
+};
+
+export { getUserByEmail, saveUser, assignRefreshToken };
