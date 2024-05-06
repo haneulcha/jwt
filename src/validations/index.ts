@@ -6,7 +6,11 @@ export async function validateRequest<T extends ZodObject<ZodRawShape>>(
   schema: T
 ): Promise<{ data: z.infer<T>; error: null }> {
   try {
-    const data = schema.parse(req.body);
+    const data = schema.parse({
+      body: req.body,
+      query: req.query,
+      params: req.params,
+    });
 
     return { data, error: null };
   } catch (error: any) {

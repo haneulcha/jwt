@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 
 async function registerUser(req: Request, res: Response) {
   const { data } = await validateRequest(req, userSchema.register);
-  const { email, password } = data;
+  const { email, password } = data.body;
 
   res.status(StatusCodes.OK).json({
     message: "success",
